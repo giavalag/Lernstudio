@@ -22,10 +22,16 @@ Regeln für deine Antworten:
 6. Korrigiere Fehler der Lernenden sanft und auf Deutsch.
 """
 
-model = genai.GenerativeModel(
-    model_name="gemini-2.0-flash",
-    system_instruction=SYSTEM_PROMPT
-)
+# Fallback-Sicherung für Modellnamen
+try:
+    model = genai.GenerativeModel(
+        model_name="gemini-1.5-flash",
+        system_instruction=SYSTEM_PROMPT
+    )
+except Exception:
+    model = genai.GenerativeModel(
+        model_name="gemini-pro"
+    )
 
 # 3. Streamlit Page Layout (A1-freundlich & übersichtlich)
 st.set_page_config(page_title="Deutsch Lernpartner A1", page_icon="💬", layout="centered")
