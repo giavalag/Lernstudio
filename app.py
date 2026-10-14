@@ -5,7 +5,7 @@ from gtts import gTTS
 import io
 
 # 1. Konfiguration & API-Schlüssel
-API_KEY = "AIzaSy..."  # Hier deinen funktionierenden AIzaSy-Schlüssel stehen lassen!
+API_KEY = "AIzaSy..."  # Deinen funktionierenden AIzaSy-Schlüssel hier belassen!
 genai.configure(api_key=API_KEY)
 
 # 2. System-Prompt für A1
@@ -22,7 +22,6 @@ Regeln für deine Antworten:
 6. Korrigiere Fehler der Lernenden sanft und auf Deutsch.
 """
 
-# 3. Modell-Initialisierung (Kompatibel ohne InvalidArgument-Fehler)
 model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
     system_instruction=SYSTEM_PROMPT
@@ -35,14 +34,12 @@ st.title("💬 Deutsch lernen mit KI")
 st.write("Wähle ein Thema und übe einfache Sätze!")
 
 # Session State für Chatverlauf & Thema
-if "chat" not in st.session_state:
-    st.session_state.chat = None
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "topic_selected" not in st.session_state:
     st.session_state.topic_selected = False
 
-# 4. Themenauswahl
+# 3. Themenauswahl
 if not st.session_state.topic_selected:
     st.subheader("📌 Wähle ein Thema:")
     
@@ -68,17 +65,15 @@ if not st.session_state.topic_selected:
             st.session_state.topic_selected = True
 
     if prompt:
-        st.session_state.chat = model.start_chat(history=[])
-        response = st.session_state.chat.send_message(prompt)
+        response = model.generate_content(prompt)
         st.session_state.messages.append({"role": "model", "content": response.text})
         st.rerun()
 
-# 5. Chat-Schnittstelle
+# 4. Chat-Schnittstelle
 else:
     if st.button("🔄 Neues Thema wählen"):
         st.session_state.messages = []
         st.session_state.topic_selected = False
-        st.session_state.chat = None
         st.rerun()
 
     st.divider()
@@ -118,7 +113,11 @@ else:
     if user_input:
         st.session_state.messages.append({"role": "user", "content": user_input})
         
-        if st.session_state.chat:
-            response = st.session_state.chat.send_message(user_input)
-            st.session_state.messages.append({"role": "model", "content": response.text})
-            st.rerun()
+        # Verlauf aufbauen
+        contents = []
+        for m in st.session_state.messages:
+            contents.append(f"{'Lernender' if m['role'] == 'user' else 'Tutor'}: {m['content']}")
+        
+        response = model.generate_content("\n".join(contents))
+        st.session_state.messages.append({"role": "model", "content": response.text})
+        st.rerun()
