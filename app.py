@@ -5,7 +5,7 @@ from gtts import gTTS
 import io
 
 # 1. Konfiguration & API-Schlüssel
-API_KEY = "AQ.Ab8RN6Kw1nCpIWb9ZRWm4Ewx5hhoqJTdi0ZajNVQwUodCegA0w"
+API_KEY = AQ.Ab8RN6LOfIRsqoLDgczorZ2I7WomzK4hDJglb2F-zcb4RQw2jw
 genai.configure(api_key=API_KEY)
 
 # 2. Modell-Initialisierung mit festem System-Prompt für A1
